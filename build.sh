@@ -19,10 +19,6 @@ cd $BUILD_DIR
 ../fetchurl "http://zlib.net/zlib-1.2.7.tar.bz2"
 ../fetchurl "http://www.bzip.org/1.0.6/bzip2-1.0.6.tar.gz"
 ../fetchurl "ftp://ftp.simplesystems.org/pub/libpng/png/src/libpng-1.2.49.tar.gz"
-../fetchurl "http://downloads.xiph.org/releases/ogg/libogg-1.3.0.tar.gz"
-../fetchurl "http://downloads.xiph.org/releases/vorbis/libvorbis-1.3.3.tar.gz"
-../fetchurl "http://downloads.xiph.org/releases/theora/libtheora-1.1.1.tar.bz2"
-../fetchurl "http://webm.googlecode.com/files/libvpx-v1.0.0.tar.bz2"
 ../fetchurl "http://downloads.sourceforge.net/project/faac/faac-src/faac-1.28/faac-1.28.tar.bz2?use_mirror=auto"
 ../fetchurl "ftp://ftp.videolan.org/pub/videolan/x264/snapshots/x264-snapshot-20120425-2245.tar.bz2"
 ../fetchurl "http://downloads.xvid.org/downloads/xvidcore-1.3.2.tar.gz"
@@ -47,28 +43,6 @@ make install PREFIX=$TARGET_DIR
 echo "*** Building libpng ***"
 cd "$BUILD_DIR/libpng-1.2.49"
 ./configure --prefix=$TARGET_DIR --enable-static --disable-shared
-make -j 4 && make install
-
-# Ogg before vorbis
-echo "*** Building libogg ***"
-cd "$BUILD_DIR/libogg-1.3.0"
-./configure --prefix=$TARGET_DIR --enable-static --disable-shared
-make -j 4 && make install
-
-# Vorbis before theora
-echo "*** Building libvorbis ***"
-cd "$BUILD_DIR/libvorbis-1.3.3"
-./configure --prefix=$TARGET_DIR --enable-static --disable-shared
-make -j 4 && make install
-
-echo "*** Building libtheora ***"
-cd "$BUILD_DIR/libtheora-1.1.1"
-./configure --prefix=$TARGET_DIR --enable-static --disable-shared
-make -j 4 && make install
-
-echo "*** Building livpx ***"
-cd "$BUILD_DIR/libvpx-v1.0.0"
-./configure --prefix=$TARGET_DIR --disable-shared
 make -j 4 && make install
 
 echo "*** Building faac ***"
@@ -104,6 +78,8 @@ rm -f "$TARGET_DIR/lib/*.so"
 echo "*** Building FFmpeg ***"
 cd "$BUILD_DIR/ffmpeg-0.10.2"
 patch -p1 <../../ffmpeg_config.patch
-CFLAGS="-I$TARGET_DIR/include" LDFLAGS="-L$TARGET_DIR/lib -lm" ./configure --prefix=${OUTPUT_DIR:-$TARGET_DIR} --extra-version=static --disable-debug --disable-shared --enable-static --extra-cflags=--static --disable-ffplay --disable-ffserver --disable-doc --enable-gpl --enable-pthreads --enable-postproc --enable-gray --enable-runtime-cpudetect --enable-libfaac --enable-libmp3lame --enable-libtheora --enable-libvorbis --enable-libx264 --enable-libxvid --enable-bzlib --enable-zlib --enable-nonfree --enable-version3 --enable-libvpx --disable-devices
+# Original config
+#CFLAGS="-I$TARGET_DIR/include" LDFLAGS="-L$TARGET_DIR/lib -lm" ./configure --prefix=${OUTPUT_DIR:-$TARGET_DIR} --extra-version=static --disable-debug --disable-shared --enable-static --extra-cflags=--static --disable-ffplay --disable-ffserver --disable-doc --enable-gpl --enable-pthreads --enable-postproc --enable-gray --enable-runtime-cpudetect --enable-libfaac --enable-libmp3lame --enable-libtheora --enable-libvorbis --enable-libx264 --enable-libxvid --enable-bzlib --enable-zlib --enable-nonfree --enable-version3 --enable-libvpx --disable-devices
+CFLAGS="-I$TARGET_DIR/include" LDFLAGS="-L$TARGET_DIR/lib -lm" ./configure --prefix=${OUTPUT_DIR:-$TARGET_DIR} --extra-version=static --disable-debug --disable-shared --enable-static --extra-cflags=--static --enable-nonfree --disable-doc --disable-mmx --disable-decoders --disable-encoders --disable-muxers --disable-bsfs --disable-parsers --enable-decoder=rawvideo --enable-decoder=pcm_s16le --enable-demuxer=yuv4mpegpipe --enable-demuxer=rawvideo --enable-demuxer=pcm_s16le --enable-libx264 --enable-gpl --enable-encoder=libx264 --enable-muxer=mp4 --enable-muxer=avi --enable-encoder=msmpeg4v2 --enable-decoder=tscc --enable-libfaac --enable-encoder=libfaac 
 make -j 4 && make install
 
